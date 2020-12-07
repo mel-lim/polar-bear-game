@@ -1,3 +1,7 @@
-#game-board {
+canvas {
   border: 1px solid black;
+}
+
+#up-button {
+  display: inline-block;
 }
