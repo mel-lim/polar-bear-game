@@ -17,6 +17,7 @@ const context = gameCanvasTarget.getContext("2d");
 // Color the area for the 'water' blue
 context.fillStyle = "hsl(198, 68%, 82%)";
 context.fillRect(1*u, 0, 7*u, 7*u);
+const imageDataWater = context.getImageData(1*u, 0, 1*u, 1*u).data;
 
 // Color the areas for the 'snow', the 'safe' area, white
 context.fillStyle = "white";
@@ -34,7 +35,7 @@ const gameConfig = {
       col1: {
         startX: 1*u,
         startYs: [0, 1*u, 4*u, 5*u],
-        trailings: [false, true, false, true]
+        isIcebergBehindArray: [false, true, false, true]
       },
       col2: {
         startX: 2*u,
@@ -63,6 +64,9 @@ const gameConfig = {
     }
   }
 }
+
+// Create an empty array to store whether iceberg = true
+const isIceberg = [['s', 's', 's', 's', 's', 's', 's'], ['i', 'i', 'w', 'w', 'i', 'i', 'w']];
 
 // Function to draw the polar bear
 const drawPolarBear = (xPos, yPos) => {
@@ -98,12 +102,13 @@ let oldXBear = gameConfig.polarBear.startX;
 let oldYBear = gameConfig.polarBear.startY;
 let newXBear;
 let newYBear;
+let isUserMove
+
 const newPosBear = (changeX, changeY) => {
-  console.log(oldXBear, oldYBear);
   if (oldXBear === 0 || oldXBear === 8*u) {
     context.fillStyle = "white";
     context.fillRect(oldXBear, oldYBear, 1*u, 1*u);
-  } else {
+  } else if (changeX) {
     context.fillStyle = "hsl(198, 68%, 82%)";
     context.fillRect(oldXBear, oldYBear, 1*u, 1*u);
     drawIceberg(oldXBear, oldYBear);
@@ -111,20 +116,32 @@ const newPosBear = (changeX, changeY) => {
   newXBear = oldXBear + changeX;
   newYBear = oldYBear + changeY;
   drawPolarBear(newXBear, newYBear);
+  if (isIceberg[newXBear/u][newYBear/u] === 'w') {
+    console.log('water');
+    stopGame();
+  } else if (isIceberg[newXBear/u][newYBear/u] === 'i') {
+    console.log('iceberg');
+  }
   oldXBear += changeX;
   oldYBear += changeY;
 }
 
 // Function to 'move' the icebergs
-const newPosIceberg = (startX, newY, oldY, trailing) => {
-  console.log(trailing);
-  if (trailing === false) {
-    context.fillStyle = "hsl(198, 68%, 82%)";
-    context.fillRect(startX, oldY, 1*u, 1*u);
+const newPosIceberg = (startX, newY, oldY, isIcebergBehind) => {
+  context.fillStyle = "hsl(198, 68%, 82%)";
+  context.fillRect(startX, oldY, 1*u, 1*u);
+  if (!isIcebergBehind) {
+    isIceberg[startX/u][oldY/u] = 'w';
+  } else {
+    drawIceberg(startX, oldY);
   }
   drawIceberg(startX, newY);
+  isIceberg[startX/u][newY/u] = 'i';
+  if (isUserMove && newXBear === startX && newYBear === oldY) {
+    newPosBear(0, newY - oldY);
+    isUserMove = false;
+  }
 }
-
 
 // Function to start the game
 let isPlaying = false;
@@ -136,7 +153,7 @@ const startGame = () => {
     let newY = [];
     const startX = startingCoords['col1']['startX'];
     const startYs = startingCoords['col1']['startYs'];
-    const trailings = startingCoords['col1']['trailings'];
+    const isIcebergBehindArray = startingCoords['col1']['isIcebergBehindArray'];
     for (let i = 0; i < startYs.length; i++) {
       oldY[i] = startYs[i];
       intervals[i] = window.setInterval(function() {
@@ -145,7 +162,7 @@ const startGame = () => {
         } else {
           newY[i] = oldY[i] + 1*u;
         }
-        newPosIceberg(startX, newY[i], oldY[i], trailings[i]);
+        newPosIceberg(startX, newY[i], oldY[i], isIcebergBehindArray[i]);
         if (oldY[i] === 6*u) {
           oldY[i] = 0;
         } else {
@@ -159,7 +176,11 @@ const startGame = () => {
 
 // Function to stop the game
 const stopGame = () => {
-  clearInterval(interval[i]);
+  const startingCoords = gameConfig.icebergs.startingCoords;
+  const startYs = startingCoords['col1']['startYs'];
+  for (let i = 0; i < startYs.length; i++) {
+    clearInterval(intervals[i]);
+  }
   console.log("stopGame function executed")
   isPlaying = false;
 }
@@ -178,21 +199,25 @@ startStopButtonTarget.addEventListener("click", function () {
 const upButtonTarget = $("up-button");
 upButtonTarget.addEventListener("click", function() {
   newPosBear(0, -1*u);
+  isUserMove = true;
 });
 
 const leftButtonTarget = $("left-button");
 leftButtonTarget.addEventListener("click", function() {
   newPosBear(-1*u, 0);
+  isUserMove = true;
 });
 
 const rightButtonTarget = $("right-button");
 rightButtonTarget.addEventListener("click", function() {
   newPosBear(1*u, 0);
+  isUserMove = true;
 });
 
 const downButtonTarget = $("down-button");
 downButtonTarget.addEventListener("click", function() {
   newPosBear(0, 1*u);
+  isUserMove = true;
 });
 
 // Use arrow keys to control the polar bear and hit 'space' to start the game
@@ -200,15 +225,19 @@ window.addEventListener('keyup', function keyPress(key) {
   switch (key.code) {
     case 'ArrowUp':
       newPosBear(0, -1*u);
+      isUserMove = true;
       break;
     case 'ArrowLeft':
       newPosBear(-1*u, 0);
+      isUserMove = true;
       break;
     case 'ArrowRight':
       newPosBear(1*u, 0);
+      isUserMove = true;
       break;
     case 'ArrowDown':
       newPosBear(0, 1*u);
+      isUserMove = true;
       break;
     case 'Space':
       if (!isPlaying) {
