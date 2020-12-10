@@ -97,23 +97,29 @@ const gameConfig = {
   speed: 2000
 }
 
-// Create an empty array to store whether iceberg = true
-const isIceberg = [['s', 's', 's', 's', 's', 's', 's'], ['i', 'i', 'w', 'w', 'i', 'i', 'w']];
+// Create a 2d array 9x7 (size of canvas) of empty strings to store the 'id' of the image for that coordinate
+const coordinateIds = [];
+for (let i = 0; i < 9; i++) {
+  coordinateIds[i] = [];
+  for (let j = 0; j < 7; j++) {
+    coordinateIds[i][j] = '';
+  }
+}
 
 // Initialise the polar bear image
 const polarBear = new Image();
-polarBear.src = "resources/images/svg/025-polar bear.svg";
+polarBear.src = "resources/images/arctic/svg/025-polar bear.svg";
 
 // Initialise the iceberg image
 const iceberg = new Image();
-iceberg.src = "resources/images/svg/015-iceberg.svg";
+iceberg.src = "resources/images/arctic/svg/015-iceberg.svg";
 
 // Initialise the arrow images
 const downArrow = new Image();
-downArrow.src = "resources/images/down-arrow.svg";
+downArrow.src = "resources/images/arrows/down-arrow.svg";
 
 const upArrow = new Image();
-upArrow.src = "resources/images/up-arrow.svg";
+upArrow.src = "resources/images/arrows/up-arrow.svg";
 
 // Function to draw the polar bear
 const drawPolarBear = (xPos, yPos) => {
@@ -149,14 +155,28 @@ const drawCanvas = () => {
   context.fillRect(0, 0, 1 * u, 7 * u);
   context.fillRect(8 * u, 0, 1 * u, 7 * u);
 
-  // Draw the icebergs
+  // Label each coordinate as either 'snow' or 'water', to start
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 7; j++) {
+      if (i === 0 || i === 8) {
+        coordinateIds[i][j] = 'snow';
+      } else {
+        coordinateIds[i][j] = 'water';
+      }
+    }
+  }
+
+  // Draw the icebergs and label the coordinate as 'iceberg'
   for (const col in gameConfig.icebergs) {
     const x = gameConfig.icebergs[col]['x'];
     const yArray = gameConfig.icebergs[col]['yArray'];
-    yArray.forEach(y => drawIceberg(x, y));
+    yArray.forEach(y => {
+      drawIceberg(x, y);
+      coordinateIds[x/u][y/u] = 'iceberg';
+    });
   }
 
-  // Draw the arrows
+  // Draw the arrows: in the 'down' direction for odd columns and 'up' direction for even columns
   let colNum = 1;
   for (const col in gameConfig.arrows) {
     const x = gameConfig.arrows[col]['x'];
@@ -199,6 +219,7 @@ const stickBear = (colNum, yArray, i) => {
 }
 
 let isIncrement = true;
+let onIceberg = false;
 
 // Function to move the icebergs by incrementing the y values
 const moveIcebergs = () => {
@@ -215,11 +236,11 @@ const moveIcebergs = () => {
 
       // Check for collision
       if (x === gameConfig.polarBear.x && yArray[i] === gameConfig.polarBear.y) {
+        onIceberg = true;
         // This if statement prevents the bear from being skipped ahead twice if its on a trailing iceberg
         if (yArray[i] !== yArray[i - 1]) {
           stickBear(colNum, yArray, i);
           isUserMove = false;
-          console.log(x / u, yArray[i] / u);
         } else if (isUserMove && isIcebergBehind[i]) {
           stickBear(colNum, yArray, i);
         }
@@ -281,91 +302,106 @@ const moveArrows = () => {
   }
 }
 
+let isPlaying = false;
+let intervalMoveIcebergs;
 
-  let isPlaying = false;
-  let intervalMoveIcebergs;
+// Function to start the icebergs moving at specified interval
+const startGame = () => {
+  intervalMoveIcebergs = window.setInterval(function () {
+    moveIcebergs();
+    moveArrows();
+  }, gameConfig.speed);
+  isPlaying = true;
+}
 
-  // Function to start the icebergs moving at specified interval
-  const startGame = () => {
-    intervalMoveIcebergs = window.setInterval(function() {
-      moveIcebergs();
-      moveArrows();
-    }, gameConfig.speed);
-    isPlaying = true;
+// Function to stop the icebergs moving
+const stopGame = () => {
+  clearInterval(intervalMoveIcebergs);
+  isPlaying = false;
+}
+
+const gameOverPrompt = () => {
+  let gameOverPrompt = prompt("Oops, you fell into the water! Would you like to play again? (y/n)");
+}
+
+// Function to check if the polar bear has fallen into the water
+const checkWater = () => {
+  if (coordinateIds[gameConfig.polarBear.x/u][gameConfig.polarBear.y/u] === 'water') {
+    stopGame();
+    setTimeout(gameOverPrompt, 500);
+  }    
+}
+
+
+// Use arrow keys to move the polar bear 
+// Hit 'space' to start the game
+window.addEventListener('keyup', function keyPress(key) {
+  switch (key.code) {
+    case 'ArrowUp':
+      gameConfig.polarBear.y -= 1 * u;
+      isUserMove = true;
+      checkWater();
+      break;
+    case 'ArrowLeft':
+      gameConfig.polarBear.x -= 1 * u;
+      isUserMove = true;
+      checkWater();
+      break;
+    case 'ArrowRight':
+      gameConfig.polarBear.x += 1 * u;
+      isUserMove = true;
+      checkWater();
+      break;
+    case 'ArrowDown':
+      gameConfig.polarBear.y += 1 * u;
+      isUserMove = true;
+      checkWater();
+      break;
+    case 'Space':
+      if (!isPlaying) {
+        startGame();
+      } else {
+        stopGame();
+      }
+      break;
+    default:
+      break;
   }
+});
 
-  // Function to stop the icebergs moving
-  const stopGame = () => {
-    clearInterval(intervalMoveIcebergs);
-    isPlaying = false;
+// Use the buttons to move the polar bear
+const upButtonTarget = $("up-button");
+upButtonTarget.addEventListener("click", function () {
+  gameConfig.polarBear.y -= 1 * u;
+  isUserMove = true;
+});
+
+const leftButtonTarget = $("left-button");
+leftButtonTarget.addEventListener("click", function () {
+  gameConfig.polarBear.x -= 1 * u;
+  isUserMove = true;
+});
+
+const rightButtonTarget = $("right-button");
+rightButtonTarget.addEventListener("click", function () {
+  gameConfig.polarBear.x += 1 * u;
+  isUserMove = true;
+});
+
+const downButtonTarget = $("down-button");
+downButtonTarget.addEventListener("click", function () {
+  gameConfig.polarBear.y += 1 * u;
+  isUserMove = true;
+});
+
+
+
+// Click the button to start/stop the game
+const startStopButtonTarget = $("start-stop-button");
+startStopButtonTarget.addEventListener("click", function () {
+  if (!isPlaying) {
+    startGame();
+  } else {
+    stopGame();
   }
-
-
-  // Use arrow keys to move the polar bear 
-  // Hit 'space' to start the game
-  window.addEventListener('keyup', function keyPress(key) {
-    switch (key.code) {
-      case 'ArrowUp':
-        gameConfig.polarBear.y -= 1 * u;
-        isUserMove = true;
-        break;
-      case 'ArrowLeft':
-        gameConfig.polarBear.x -= 1 * u;
-        isUserMove = true;
-        break;
-      case 'ArrowRight':
-        gameConfig.polarBear.x += 1 * u;
-        isUserMove = true;
-        break;
-      case 'ArrowDown':
-        gameConfig.polarBear.y += 1 * u;
-        isUserMove = true;
-        break;
-      case 'Space':
-        if (!isPlaying) {
-          startGame();
-        } else {
-          stopGame();
-        }
-        break;
-      default:
-        break;
-    }
-  });
-
-  // Use the buttons to move the polar bear
-  const upButtonTarget = $("up-button");
-  upButtonTarget.addEventListener("click", function () {
-    gameConfig.polarBear.y -= 1 * u;
-    isUserMove = true;
-  });
-
-  const leftButtonTarget = $("left-button");
-  leftButtonTarget.addEventListener("click", function () {
-    gameConfig.polarBear.x -= 1 * u;
-    isUserMove = true;
-  });
-
-  const rightButtonTarget = $("right-button");
-  rightButtonTarget.addEventListener("click", function () {
-    gameConfig.polarBear.x += 1 * u;
-    isUserMove = true;
-  });
-
-  const downButtonTarget = $("down-button");
-  downButtonTarget.addEventListener("click", function () {
-    gameConfig.polarBear.y += 1 * u;
-    isUserMove = true;
-  });
-
-
-
-  // Click the button to start/stop the game
-  const startStopButtonTarget = $("start-stop-button");
-  startStopButtonTarget.addEventListener("click", function () {
-    if (!isPlaying) {
-      startGame();
-    } else {
-      stopGame();
-    }
-  });
+});
