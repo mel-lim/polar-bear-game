@@ -121,6 +121,10 @@ downArrow.src = "resources/images/arrows/down-arrow.svg";
 const upArrow = new Image();
 upArrow.src = "resources/images/arrows/up-arrow.svg";
 
+// Initialise the fish image
+const fish = new Image();
+fish.src = "resources/images/arctic/svg/009-fish.svg";
+
 // Function to draw the polar bear
 const drawPolarBear = (xPos, yPos) => {
   context.drawImage(polarBear, xPos, yPos, 1 * u, 1 * u);
@@ -139,6 +143,30 @@ const drawUpArrow = (xPos, yPos) => {
 const drawDownArrow = (xPos, yPos) => {
   context.drawImage(downArrow, xPos, yPos, 1 * u, 1 * u);
 }
+
+
+
+// Object constructor to handle sound objects
+function sound(src, isLoop) {
+  this.sound = document.createElement("audio");
+  this.sound.src = src;
+  this.sound.setAttribute("preload", "auto");
+  this.sound.setAttribute("controls", "none");
+  this.sound.loop = isLoop;
+  this.sound.style.display = "none";
+  document.body.appendChild(this.sound);
+  this.play = function(){
+    this.sound.play();
+  }
+  this.stop = function(){
+    this.sound.pause();
+  }
+}
+
+// Initialise the sounds and music
+const growl = new sound("resources/sounds/growl-2.wav", false);
+const splash = new sound("resources/sounds/lava.flac", false);
+const backgroundMusic = new sound("resources/sounds/jewels-and-puzzles.mp3", true);
 
 // Function to draw the canvas and all the components on it
 const drawCanvas = () => {
@@ -311,12 +339,14 @@ const startGame = () => {
     moveIcebergs();
     moveArrows();
   }, gameConfig.speed);
+  backgroundMusic.play();
   isPlaying = true;
 }
 
 // Function to stop the icebergs moving
 const stopGame = () => {
   clearInterval(intervalMoveIcebergs);
+  backgroundMusic.stop();
   isPlaying = false;
 }
 
@@ -327,6 +357,7 @@ const gameOverPrompt = () => {
 // Function to check if the polar bear has fallen into the water
 const checkWater = () => {
   if (coordinateIds[gameConfig.polarBear.x/u][gameConfig.polarBear.y/u] === 'water') {
+    splash.play();
     stopGame();
     setTimeout(gameOverPrompt, 500);
   }    
@@ -339,21 +370,25 @@ window.addEventListener('keyup', function keyPress(key) {
   switch (key.code) {
     case 'ArrowUp':
       gameConfig.polarBear.y -= 1 * u;
+      growl.play();
       isUserMove = true;
       checkWater();
       break;
     case 'ArrowLeft':
       gameConfig.polarBear.x -= 1 * u;
+      growl.play();
       isUserMove = true;
       checkWater();
       break;
     case 'ArrowRight':
       gameConfig.polarBear.x += 1 * u;
+      growl.play();
       isUserMove = true;
       checkWater();
       break;
     case 'ArrowDown':
       gameConfig.polarBear.y += 1 * u;
+      growl.play();
       isUserMove = true;
       checkWater();
       break;
