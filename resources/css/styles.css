@@ -76,9 +76,9 @@ canvas {
   border: solid 1px black;
   background-color: hsl(194, 28%, 93%);
   position: absolute;
-  width: 25%;
-  top: 37.5%;
-  left: 37.5%;
+  width: 30%;
+  top: 30%;
+  left: 35%;
   padding: 0 1em 1em 1em;
   text-align: center;
 }
