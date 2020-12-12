@@ -4,7 +4,7 @@ const $ = id => {
 }
 
 // We want to set 1 unit = 75px
-const u = 75;
+const u = 65;
 
 // Target the canvas element and set its dimensions (9x7)
 const gameCanvasTarget = $("game-canvas");

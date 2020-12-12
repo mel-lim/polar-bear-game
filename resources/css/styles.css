@@ -1,7 +1,88 @@
 canvas {
   border: 1px solid black;
+  
 }
 
-#up-button {
-  display: inline-block;
+body {
+  background-color: 
+}
+
+/* Font styles */
+
+h1 {
+  font-family: 'Special Elite', cursive;
+  font-size: 2.5rem;
+}
+
+h2, li, p {
+  font-family: 'Inconsolata', monospace;
+}
+
+button {
+  font-family: 'Inconsolata', monospace;
+}
+
+
+header {
+  text-align: center;
+}
+
+main {
+  display: flex;
+  padding: 0 2%;
+  justify-content: 
+}
+
+/* Instructions */
+#instructions-area {
+  padding-right: 2%;
+}
+#instructions-area h2 {
+  text-align: center;
+}
+
+#instructions-area li, #instructions-area p {
+  margin-bottom: 0.5em;
+}
+
+/* Control buttons */
+#controls-area {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#up-button-container, #left-right-buttons-container, #down-button-container, #start-pause-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#left-button, #right-button {
+  width: 3.5em;
+}
+
+#start-pause-button-container {
+  margin-top: 1.5em;
+}
+
+#play-again-box {
+  display: block;
+  border: solid 1px black;
+  background-color: hsl(194, 28%, 93%);
+  position: absolute;
+  width: 40%;
+  top: 30%;
+  left: 30%;
+  padding: 0 1em 1em 1em;
+  text-align: center;
+}
+
+/* Play-again 'pop-up' box */
+
+#play-again-box p {
+  font-size: 1.5rem;
+}
+
+footer {
+  text-align: center;
 }
