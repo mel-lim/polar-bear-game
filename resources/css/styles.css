@@ -1,17 +1,8 @@
-canvas {
-  border: 1px solid black;
-  
-}
-
-body {
-  background-color: 
-}
-
 /* Font styles */
 
 h1 {
   font-family: 'Special Elite', cursive;
-  font-size: 2.5rem;
+  font-size: 2.2rem;
 }
 
 h2, li, p {
@@ -22,10 +13,13 @@ button {
   font-family: 'Inconsolata', monospace;
 }
 
+/* Header */
 
 header {
   text-align: center;
 }
+
+/* Main */
 
 main {
   display: flex;
@@ -46,10 +40,19 @@ main {
   margin-bottom: 0.5em;
 }
 
+/* Canvas */
+canvas {
+  border: 1px solid black;
+}
+
 /* Control buttons */
 #controls-area {
   display: flex;
   flex-wrap: wrap;
+}
+
+#up-button-container {
+  margin-top: 0.8em;
 }
 
 #up-button-container, #left-right-buttons-container, #down-button-container, #start-pause-button-container {
@@ -63,8 +66,10 @@ main {
 }
 
 #start-pause-button-container {
-  margin-top: 1.5em;
+  margin-top: 0.8em;
 }
+
+/* 'Pop-up' box, on win or lose */
 
 #play-again-box {
   display: none;
@@ -78,8 +83,6 @@ main {
   text-align: center;
 }
 
-/* Play-again 'pop-up' box */
-
 #play-again-box p {
   font-size: 1.5rem;
 }
@@ -91,6 +94,8 @@ main {
 #not-play-again-button {
   margin-right: 0.5em;
 }
+
+/* Footer */
 
 footer {
   text-align: center;

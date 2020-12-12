@@ -247,6 +247,7 @@ const startGame = () => {
 
   // Allow user to use the arrow keys to move the polar bear 
   window.addEventListener('keyup', function (key) {
+    key.preventDefault();
     arrowKeyPress(key)
   });
 
