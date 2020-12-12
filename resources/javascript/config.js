@@ -24,77 +24,70 @@ let gameConfig = {
     col1: {
       x: 1 * u,
       yArray: [0, 1 * u, 4 * u, 5 * u],
-      isIcebergBehind: [false, true, false, true]
+      isLeadingIceberg: [false, true, false, true]
     },
     col2: {
       x: 2 * u,
       yArray: [1 * u, 4 * u, 5 * u],
-      isIcebergBehind: [false, false, true]
+      isLeadingIceberg: [false, false, true]
     },
     col3: {
       x: 3 * u,
       yArray: [1 * u, 2 * u, 3 * u, 6 * u],
-      isIcebergBehind: [false, true, true, false]
+      isLeadingIceberg: [false, false, true, false]
     },
     col4: {
       x: 4 * u,
       yArray: [3 * u, 4 * u, 5 * u],
-      isIcebergBehind: [false, true, false]
+      isLeadingIceberg: [false, false, true]
     },
     col5: {
       x: 5 * u,
       yArray: [2 * u, 3 * u, 5 * u, 6 * u],
-      isIcebergBehind: [false, true, false, true]
+      isLeadingIceberg: [false, true, false, true]
     },
     col6: {
       x: 6 * u,
       yArray: [1 * u, 4 * u, 5 * u],
-      isIcebergBehind: [false, false, true]
+      isLeadingIceberg: [false, false, true]
     },
     col7: {
       x: 7 * u,
       yArray: [1 * u, 2 * u, 5 * u],
-      isIcebergBehind: [false, true, false]
+      isLeadingIceberg: [false, true, false]
     }
   },
   arrows: {
     col1: {
       x: 1 * u,
-      yArray: [2 * u, 6 * u],
+      yArray: [2 * u, 6 * u]
     },
     col2: {
       x: 2 * u,
-      yArray: [0, 3 * u],
-      isIcebergBehind: [false, false, true]
+      yArray: [0, 3 * u]
     },
     col3: {
       x: 3 * u,
-      yArray: [0, 4 * u],
-      isIcebergBehind: [false, true, true, false]
+      yArray: [0, 4 * u]
     },
     col4: {
       x: 4 * u,
-      yArray: [2 * u],
-      isIcebergBehind: [false, true, false]
+      yArray: [2 * u]
     },
     col5: {
       x: 5 * u,
-      yArray: [0, 4 * u],
-      isIcebergBehind: [false, true, false, true]
+      yArray: [0, 4 * u]
     },
     col6: {
       x: 6 * u,
-      yArray: [0, 3 * u],
-      isIcebergBehind: [false, false, true]
+      yArray: [0, 3 * u]
     },
     col7: {
       x: 7 * u,
-      yArray: [3 * u, 6 * u],
-      isIcebergBehind: [false, true, false]
-
+      yArray: [3 * u, 6 * u]
     }
   },
-  speed: 2000
+  speed: 1750
 }
 
 // Create a 2d array 9x7 (size of canvas) of empty strings (for now), to later store the 'id' of the image for that coordinate

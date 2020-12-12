@@ -34,14 +34,15 @@ main {
 }
 
 /* Instructions */
-#instructions-area {
+#instructions-container {
   padding-right: 2%;
+  margin-bottom: 2em;
 }
-#instructions-area h2 {
+#instructions-container h2, #credits-container h2 {
   text-align: center;
 }
 
-#instructions-area li, #instructions-area p {
+#instructions-container li, #credits-container li {
   margin-bottom: 0.5em;
 }
 
@@ -66,7 +67,7 @@ main {
 }
 
 #play-again-box {
-  display: block;
+  display: none;
   border: solid 1px black;
   background-color: hsl(194, 28%, 93%);
   position: absolute;
@@ -81,6 +82,14 @@ main {
 
 #play-again-box p {
   font-size: 1.5rem;
+}
+
+#play-again-button {
+  margin-right: 0.5em;
+}
+
+#not-play-again-button {
+  margin-right: 0.5em;
 }
 
 footer {

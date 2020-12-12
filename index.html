@@ -32,31 +32,32 @@
 
 
   <main>
-  <div id="instructions-area">
-    <h2>Instructions</h2>
-    <ol>
-      <li>Hit the space bar or click the "start/stop" button on the screen to start playing.</li>
-      <li>Use the arrow keys or the directional buttons on the screen to move the polar bear.</li>
-      <li>To win, use the icebergs to help the polar bear cross the water to get the fish.</li>
-      <li>If the polar bear falls into the water or gets carried off the screen by an iceberg, you lose, but please keep trying!</li>
-    </ol>
+  <div id="instructions-and-credits">
+    <div id="instructions-container">
+      <h2>Instructions</h2>
+      <ol>
+        <li>To win, use the icebergs to help the polar bear cross the water to get the fish.</li>
+        <li>To move the polar bear, use the arrow keys or the directional buttons at the bottom of the screen.</li>
+        <li>If the polar bear falls into the water or gets carried off the screen by an iceberg, you lose.</li>
+        <li>When you're ready, hit the space bar or click the "start/stop" button at the bottom of the screen to start playing.</li>
+      </ol>
+    </div>
 
-    <h2>Credits</h2>
-    <ul>
-      <li>Icons made by <a href="https://www.flaticon.com/authors/darius-dan" title="Darius Dan">Darius Dan</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></li>
-      <li>Background music, "Of Jewels and Puzzles" by Eric Matyas from <a href="https://soundimage.org/puzzle-music-5/">Soundimage.org</a></li>
-      <li>Growling sound effect by pauliuw, obtained from <a href="https://opengameart.org/content/animal-or-beast-sounds" title="OpenGameArt">OpenGameArt.org</a></li>
-      <li>Footsteps in the snow sound effect by Corsica_S, obtained from <a href="https://opengameart.org/content/42-snow-and-gravel-footsteps" title="OpenGameArt">OpenGameArt.org</a></li>
-      <li>Splash sound effect by Michel Baradari, obtained from <a href="https://opengameart.org/content/lava-splash" title="OpenGameArt">OpenGameArt.org</a></li>
-      <li>Chewing and winning sound effects obtained from <a href="https://www.zapsplat.com" title="Zapsplat">Zapsplat.com</a></li>
-
-
-
-    </ul>
-    
-    
-
+    <div id="credits-container">
+      <h2>Credits</h2>
+      <ul>
+        <li>Icons made by <a href="https://www.flaticon.com/authors/darius-dan" title="Darius Dan">Darius Dan</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></li>
+        <li>Background music, "Of Jewels and Puzzles" by Eric Matyas from <a href="https://soundimage.org/puzzle-music-5/">Soundimage.org</a></li>
+        <li>Growling sound effect by pauliuw, obtained from <a href="https://opengameart.org/content/animal-or-beast-sounds" title="OpenGameArt">OpenGameArt.org</a></li>
+        <li>Footsteps in the snow sound effect by Corsica_S, obtained from <a href="https://opengameart.org/content/42-snow-and-gravel-footsteps" title="OpenGameArt">OpenGameArt.org</a></li>
+        <li>Splash sound effect by Michel Baradari, obtained from <a href="https://opengameart.org/content/lava-splash" title="OpenGameArt">OpenGameArt.org</a></li>
+        <li>Chewing and winning sound effects obtained from <a href="https://www.zapsplat.com" title="Zapsplat">Zapsplat.com</a></li>
+      </ul>
+    </div>
   </div>
+  
+
+
     <div id="game-area">
       <canvas id="game-canvas"></canvas>
 
@@ -82,10 +83,10 @@
     </div>
 
     <div id="play-again-box">
-      <h2>Yum, that fish was delicious!</h2>
+      <h2 id="play-again-box-heading"></h2>
       <p>Would you like to play again?</p>
-      <button>Yes</button> 
-      <button>No</button>
+      <button id="play-again-button">Yes</button> 
+      <button id="not-play-again-button">No</button>
     </div>
 
 

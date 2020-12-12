@@ -12,6 +12,7 @@ const stickBear = (colNum, yArray, i) => {
     if (gameConfig.polarBear.y > 6 * u) {
       splash.play();
       stopGame();
+      gameOverPrompt(false);
     }
 
     // If it is an even column, move the iceberg and polar bear up the screen
@@ -22,17 +23,8 @@ const stickBear = (colNum, yArray, i) => {
     if (gameConfig.polarBear.y < 0) {
       splash.play();
       stopGame();
-    }
-  }
-}
-
-const checkOnScreen = () => {
-  if (gameConfig.polarBear.y < 0) {
-    stopGame();
-    splash.play();
-    setTimeout(function() {
       gameOverPrompt(false);
-    }, 500);
+    }
   }
 }
 
@@ -48,7 +40,7 @@ const moveIcebergs = () => {
 
     const x = gameConfig.icebergs[col]['x'];
     const yArray = gameConfig.icebergs[col]['yArray'];
-    const isIcebergBehind = gameConfig.icebergs[col]['isIcebergBehind'];
+    const isLeadingIceberg = gameConfig.icebergs[col]['isLeadingIceberg'];
 
     for (let i = 0; i < yArray.length; i++) {
 
@@ -63,7 +55,7 @@ const moveIcebergs = () => {
           isUserMove = false;
 
           // If the user navigates the polar bear onto a leading iceberg, this will execute
-        } else if (isUserMove && isIcebergBehind[i]) {
+        } else if (isUserMove && isLeadingIceberg[i]) {
           stickBear(colNum, yArray, i);
         }
       }
@@ -136,39 +128,49 @@ const stopGame = () => {
   isPlaying = false;
 }
 
+// Function to prompt user with a dialog box to play again when game is won or lost
+
+const playAgainBoxTarget = $('play-again-box');
+const playAgainBoxHeadingTarget = $('play-again-box-heading');
+const playAgainButtonTarget = $('play-again-button');
+const notPlayAgainButtonTarget = $('not-play-again-button');
+
 const gameOverPrompt = (isWin) => {
-  let gameOverPrompt;
-  if (!isWin) {
-    gameOverPrompt = prompt("Oops, you fell into the water! Would you like to play again? (y/n)");
+  if (isWin) {
+    playAgainBoxHeadingTarget.innerHTML = "Yum, that fish was delicious!"
   } else {
-    gameOverPrompt = prompt("Yum, that fish was delicious! Would you like to play again? (y/n)");
-  }  
-    
-  if (gameOverPrompt.toLowerCase() == 'y' || gameOverPrompt.toLowerCase() == 'yes') {
-    location.reload();
-  } else {
-    return;
+    playAgainBoxHeadingTarget.innerHTML = "Oops, you fell in the water."
   }
+  playAgainBoxTarget.style.display = "block";
 }
+
+// If the user clicks "yes" to play again, refresh the screen
+playAgainButtonTarget.addEventListener('click', function () {
+  location.reload();
+})
+
+// If the user clicks "no" to not play again, refresh the screen
+notPlayAgainButtonTarget.addEventListener('click', function () {
+  location.reload();
+})
 
 // Function to check if the polar bear has fallen into the water
 const checkWin = () => {
   if (coordinateIds[gameConfig.polarBear.x / u][gameConfig.polarBear.y / u] == 'water') {
-    stopGame();
     splash.play();
-    setTimeout(function() {
-      gameOverPrompt(false);
-    }, 500);
-  } else if (coordinateIds[gameConfig.polarBear.x / u][gameConfig.polarBear.y / u] == 'fish') {
+    drawCanvas();
     stopGame();
+    gameOverPrompt(false);
+  } else if (coordinateIds[gameConfig.polarBear.x / u][gameConfig.polarBear.y / u] == 'fish') {
     winSound.play();
     chewing.play();
-    setTimeout(function() {
-      gameOverPrompt(true);
-    }, 500);
+    drawCanvas();
+    stopGame();
+    gameOverPrompt(true);
   }
 }
 
+// Function to move the bear
 const moveBear = (direction) => {
   switch (direction) {
     case 'up':
@@ -204,6 +206,7 @@ const moveBear = (direction) => {
   checkWin();
 }
 
+// Function to process the arrow keys pressed by the user
 const arrowKeyPress = key => {
   switch (key.code) {
     case 'ArrowUp':
@@ -284,8 +287,8 @@ window.addEventListener('keyup', function hitSpaceBar(key) {
 });
 
 // Click the button to start/stop the game
-const startStopButtonTarget = $("start-stop-button");
-startStopButtonTarget.addEventListener("click", function () {
+const startPauseButtonTarget = $("start-pause-button");
+startPauseButtonTarget.addEventListener("click", function () {
   if (!isPlaying) {
     startGame();
   } else {
