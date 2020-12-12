@@ -6,30 +6,39 @@ const stickBear = (colNum, yArray, i) => {
 
   // If it is an odd column, move the iceberg and polar bear down the screen
   if (colNum % 2 === 1) {
-
-    if (yArray[i] === 6 * u) {
-      gameConfig.polarBear.y = 0;
-    } else {
-      gameConfig.polarBear.y += 1 * u;
+    gameConfig.polarBear.y += 1 * u;
+    
+    // If the polar bear gets moved off the canvas, the game is lost
+    if (gameConfig.polarBear.y > 6 * u) {
+      splash.play();
+      stopGame();
     }
 
     // If it is an even column, move the iceberg and polar bear up the screen
   } else {
-
-    if (yArray[i] === 0) {
-      gameConfig.polarBear.y = 6 * u;
-    } else {
-      gameConfig.polarBear.y -= 1 * u;
+    gameConfig.polarBear.y -= 1 * u;
+    
+    // If the polar bear gets moved off the canvas, the game is lost
+    if (gameConfig.polarBear.y < 0) {
+      splash.play();
+      stopGame();
     }
   }
 }
 
-
+const checkOnScreen = () => {
+  if (gameConfig.polarBear.y < 0) {
+    stopGame();
+    splash.play();
+    setTimeout(function() {
+      gameOverPrompt(false);
+    }, 500);
+  }
+}
 
 // Function to move the icebergs by incrementing the y values
 
 let isIncrement = true;
-let onIceberg = false;
 
 const moveIcebergs = () => {
   let colNum = 1;
@@ -46,7 +55,7 @@ const moveIcebergs = () => {
       // Check for collision
       if (x === gameConfig.polarBear.x && yArray[i] === gameConfig.polarBear.y) {
 
-        onIceberg = true;
+        // If the bear is on the iceberg, call the stickBear function to have the bear move along with the iceberg that it is on
 
         // The following if block prevents the bear from being skipped ahead twice if its on a trailing iceberg
         if (yArray[i] !== yArray[i - 1]) {
@@ -121,56 +130,108 @@ const moveArrows = () => {
 
 // Function to stop game
 const stopGame = () => {
+  clearInterval(intervalDrawCanvas);
   clearInterval(intervalMoveIcebergs);
   backgroundMusic.stop();
   isPlaying = false;
 }
 
-const gameOverPrompt = () => {
-  let gameOverPrompt = prompt("Oops, you fell into the water! Would you like to play again? (y/n)");
-  if (gameOverPrompt === 'y' || gameOverPrompt === 'Y' || gameOverPrompt === 'yes' || gameOverPrompt === 'Yes') {
-    startGame();
+const gameOverPrompt = (isWin) => {
+  let gameOverPrompt;
+  if (!isWin) {
+    gameOverPrompt = prompt("Oops, you fell into the water! Would you like to play again? (y/n)");
+  } else {
+    gameOverPrompt = prompt("Yum, that fish was delicious! Would you like to play again? (y/n)");
+  }  
+    
+  if (gameOverPrompt.toLowerCase() == 'y' || gameOverPrompt.toLowerCase() == 'yes') {
+    location.reload();
   } else {
     return;
   }
 }
 
 // Function to check if the polar bear has fallen into the water
-const checkWater = () => {
-  if (coordinateIds[gameConfig.polarBear.x / u][gameConfig.polarBear.y / u] === 'water') {
-    splash.play();
+const checkWin = () => {
+  if (coordinateIds[gameConfig.polarBear.x / u][gameConfig.polarBear.y / u] == 'water') {
     stopGame();
-    setTimeout(gameOverPrompt, 500);
+    splash.play();
+    setTimeout(function() {
+      gameOverPrompt(false);
+    }, 500);
+  } else if (coordinateIds[gameConfig.polarBear.x / u][gameConfig.polarBear.y / u] == 'fish') {
+    stopGame();
+    winSound.play();
+    chewing.play();
+    setTimeout(function() {
+      gameOverPrompt(true);
+    }, 500);
   }
 }
 
 const moveBear = (direction) => {
   switch (direction) {
     case 'up':
-      gameConfig.polarBear.y -= 1 * u;
+      if (gameConfig.polarBear.y !== 0) {
+        gameConfig.polarBear.y -= 1 * u;
+      }
       break;
+      
     case 'left':
-      gameConfig.polarBear.x -= 1 * u;
+      if (gameConfig.polarBear.x !== 0) {
+        gameConfig.polarBear.x -= 1 * u;
+      }
       break;
     case 'right':
-      gameConfig.polarBear.x += 1 * u;
+      if (gameConfig.polarBear.x !== 8 * u) {
+        gameConfig.polarBear.x += 1 * u;
+      }
       break;
     case 'down':
-      gameConfig.polarBear.y += 1 * u;
+      if (gameConfig.polarBear.y !== 6 * u) {
+        gameConfig.polarBear.y += 1 * u;
+      }
       break;
     default:
       break;
     }
-  growl.play();
+  if (gameConfig.polarBear.x == 0 || gameConfig.polarBear.x == 8 * u) {
+    snowFootstep.play();
+  } else {
+    growl.play();
+  }
   isUserMove = true;
-  checkWater();
+  checkWin();
+}
+
+const arrowKeyPress = key => {
+  switch (key.code) {
+    case 'ArrowUp':
+      moveBear('up');
+      break;
+    case 'ArrowLeft':
+      moveBear('left');
+      break;
+    case 'ArrowRight':
+      moveBear('right');
+      break;
+    case 'ArrowDown':
+      moveBear('down');
+      break;
+    default:
+      break;
+  }
 }
 
 // Function to start the game
 let isPlaying = false;
 let intervalMoveIcebergs;
+let intervalDrawCanvas
 
 const startGame = () => {
+
+  // Every 10ms, clear and redraw the canvas with all the components on it at their updated locations
+  intervalDrawCanvas = window.setInterval(drawCanvas, 10);
 
   // Start the icebergs moving
   intervalMoveIcebergs = window.setInterval(function () {
@@ -182,23 +243,8 @@ const startGame = () => {
   backgroundMusic.play();
 
   // Allow user to use the arrow keys to move the polar bear 
-  window.addEventListener('keyup', function keyPress(key) {
-    switch (key.code) {
-      case 'ArrowUp':
-        moveBear('up');
-        break;
-      case 'ArrowLeft':
-        moveBear('left');
-        break;
-      case 'ArrowRight':
-        moveBear('right');
-        break;
-      case 'ArrowDown':
-        moveBear('down');
-        break;
-      default:
-        break;
-    }
+  window.addEventListener('keyup', function (key) {
+    arrowKeyPress(key)
   });
 
   // Allow user to use the buttons to move the polar bear

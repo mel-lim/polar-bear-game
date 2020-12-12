@@ -15,10 +15,10 @@ gameCanvasTarget.height = 7 * u;
 const context = gameCanvasTarget.getContext("2d");
 
 // Configure the starting coordinates for the game
-const gameConfig = {
+let gameConfig = {
   polarBear: {
     x: 0,
-    y: 3 * u
+    y: 1 * u
   },
   icebergs: {
     col1: {
@@ -105,3 +105,6 @@ for (let i = 0; i < 9; i++) {
     coordinateIds[i][j] = '';
   }
 }
+
+// Make a deep copy of the initial game config to be used when we reset the canvas
+const initialGameConfig = JSON.parse(JSON.stringify(gameConfig));

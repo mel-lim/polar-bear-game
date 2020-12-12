@@ -1,21 +1,34 @@
+// Initialise image array
+let images = [];
+
 // Initialise the polar bear image
 const polarBear = new Image();
 polarBear.src = "resources/images/arctic/svg/025-polar bear.svg";
+images.push(polarBear);
 
 // Initialise the iceberg image
 const iceberg = new Image();
 iceberg.src = "resources/images/arctic/svg/015-iceberg.svg";
+images.push(iceberg);
 
 // Initialise the arrow images
 const downArrow = new Image();
 downArrow.src = "resources/images/arrows/down-arrow.svg";
+images.push(downArrow);
 
 const upArrow = new Image();
 upArrow.src = "resources/images/arrows/up-arrow.svg";
+images.push(upArrow);
+
+// Initialise igloo
+const igloo = new Image();
+igloo.src = "resources/images/arctic/svg/017-igloo.svg";
+images.push(igloo);
 
 // Initialise the fish image
 const fish = new Image();
 fish.src = "resources/images/arctic/svg/009-fish.svg";
+images.push(fish);
 
 // Object constructor to handle sound objects
 function sound(src, isLoop) {
@@ -36,27 +49,11 @@ function sound(src, isLoop) {
 
 // Initialise the sounds and music
 const growl = new sound("resources/sounds/growl-2.wav", false);
+const snowFootstep = new sound("resources/sounds/snow-footstep.flac");
 const splash = new sound("resources/sounds/lava.flac", false);
 const backgroundMusic = new sound("resources/sounds/jewels-and-puzzles.mp3", true);
-
-// Function to draw the polar bear
-const drawPolarBear = (xPos, yPos) => {
-  context.drawImage(polarBear, xPos, yPos, 1 * u, 1 * u);
-}
-
-// Function to draw each iceberg
-const drawIceberg = (xPos, yPos) => {
-  context.drawImage(iceberg, xPos, yPos, 1 * u, 1 * u);
-}
-
-// Function to draw the arrows
-const drawUpArrow = (xPos, yPos) => {
-  context.drawImage(upArrow, xPos, yPos, 1 * u, 1 * u);
-}
-
-const drawDownArrow = (xPos, yPos) => {
-  context.drawImage(downArrow, xPos, yPos, 1 * u, 1 * u);
-}
+const chewing = new sound("resources/sounds/chewing.mp3", false);
+const winSound = new sound("resources/sounds/win-sound.mp3", false);
 
 // Function to draw the canvas and all the components on it
 const drawCanvas = () => {
@@ -84,12 +81,17 @@ const drawCanvas = () => {
     }
   }
 
+  // Draw the igloo and the fish
+  context.drawImage(igloo, 0, 0, 1 * u, 1 * u);
+  context.drawImage(fish, 8 * u, 6 * u, 1 * u, 1 * u);
+  coordinateIds[8][6] = 'fish';
+
   // Draw the icebergs and label each coordinate as 'iceberg' as they are drawn
   for (const col in gameConfig.icebergs) {
     const x = gameConfig.icebergs[col]['x'];
     const yArray = gameConfig.icebergs[col]['yArray'];
     yArray.forEach(y => {
-      drawIceberg(x, y);
+      context.drawImage(iceberg, x, y, 1 * u, 1 * u);
       coordinateIds[x/u][y/u] = 'iceberg';
     });
   }
@@ -100,16 +102,26 @@ const drawCanvas = () => {
     const x = gameConfig.arrows[col]['x'];
     const yArray = gameConfig.arrows[col]['yArray'];
     if (colNum % 2 === 1) {
-      yArray.forEach(y => drawDownArrow(x, y));
+      yArray.forEach(y => context.drawImage(downArrow, x, y, 1 * u, 1 * u));
     } else {
-      yArray.forEach(y => drawUpArrow(x, y));
+      yArray.forEach(y => context.drawImage(upArrow, x, y, 1 * u, 1 * u));
     }
     colNum++;
   }
 
   // Draw the polar bear
-  drawPolarBear(gameConfig.polarBear.x, gameConfig.polarBear.y);
+  context.drawImage(polarBear, gameConfig.polarBear.x, gameConfig.polarBear.y, 1 * u, 1 * u);
 }
 
-// Every 10ms, clear and redraw the canvas with all the components on it at their 
-let intervalDrawCanvas = window.setInterval(drawCanvas, 10);
+// Once all images are loaded, draw the initial canvas
+let imagesLoaded = 0;
+const numOfImages = images.length;
+
+for (let i = 0; i < numOfImages; i++) {
+  images[i].onload = function () {
+    imagesLoaded++;
+    if (imagesLoaded == numOfImages) {
+      drawCanvas();
+    }
+  }
+}
