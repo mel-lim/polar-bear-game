@@ -2,7 +2,7 @@
 
 h1 {
   font-family: 'Special Elite', cursive;
-  font-size: 2.2rem;
+  font-size: 2.5rem;
 }
 
 h2, li, p {
@@ -76,9 +76,9 @@ canvas {
   border: solid 1px black;
   background-color: hsl(194, 28%, 93%);
   position: absolute;
-  width: 40%;
-  top: 30%;
-  left: 30%;
+  width: 25%;
+  top: 37.5%;
+  left: 37.5%;
   padding: 0 1em 1em 1em;
   text-align: center;
 }

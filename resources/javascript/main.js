@@ -136,23 +136,32 @@ const playAgainButtonTarget = $('play-again-button');
 const notPlayAgainButtonTarget = $('not-play-again-button');
 
 const gameOverPrompt = (isWin) => {
+
   if (isWin) {
     playAgainBoxHeadingTarget.innerHTML = "Yum, that fish was delicious!"
   } else {
     playAgainBoxHeadingTarget.innerHTML = "Oops, you fell in the water."
   }
+
   playAgainBoxTarget.style.display = "block";
+
+  // If the user clicks "yes" to play again, refresh the screen
+  playAgainButtonTarget.addEventListener('click', function () {
+  location.reload();
+  })
+
+  // If the user clicks "no" to not play again, refresh the screen
+  notPlayAgainButtonTarget.addEventListener('click', function () {
+  location.reload();
+  })
+
+  // If the user hits the "enter" key, refresh the screen
+  window.addEventListener('keydown', function (key) {
+    if (key.code === 'Enter') {
+      location.reload();
+    }
+  });
 }
-
-// If the user clicks "yes" to play again, refresh the screen
-playAgainButtonTarget.addEventListener('click', function () {
-  location.reload();
-})
-
-// If the user clicks "no" to not play again, refresh the screen
-notPlayAgainButtonTarget.addEventListener('click', function () {
-  location.reload();
-})
 
 // Function to check if the polar bear has fallen into the water
 const checkWin = () => {
@@ -210,6 +219,7 @@ const moveBear = (direction) => {
 const arrowKeyPress = key => {
   switch (key.code) {
     case 'ArrowUp':
+      key.preventDefault();
       moveBear('up');
       break;
     case 'ArrowLeft':
@@ -219,6 +229,7 @@ const arrowKeyPress = key => {
       moveBear('right');
       break;
     case 'ArrowDown':
+      key.preventDefault();
       moveBear('down');
       break;
     default:
@@ -246,8 +257,7 @@ const startGame = () => {
   backgroundMusic.play();
 
   // Allow user to use the arrow keys to move the polar bear 
-  window.addEventListener('keyup', function (key) {
-    key.preventDefault();
+  window.addEventListener('keydown', function (key) {
     arrowKeyPress(key)
   });
 
@@ -277,8 +287,9 @@ const startGame = () => {
 }
 
 // Hit the space bar to start/stop the game
-window.addEventListener('keyup', function hitSpaceBar(key) {
+window.addEventListener('keydown', function hitSpaceBar(key) {
   if (key.code === 'Space') {
+    key.preventDefault();
     if (!isPlaying) {
       startGame();
     } else {
