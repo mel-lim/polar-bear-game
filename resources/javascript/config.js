@@ -3,7 +3,7 @@ const $ = id => {
   return document.getElementById(id);
 }
 
-// We want to set 1 unit = 75px
+// We want to set 1 unit = 65px
 const u = 65;
 
 // Target the canvas element and set its dimensions (9x7)
@@ -14,80 +14,66 @@ gameCanvasTarget.height = 7 * u;
 // Create drawing context on the canvas
 const context = gameCanvasTarget.getContext("2d");
 
+// Set the speed
+let speed = 1750;
+
 // Configure the starting coordinates for the game
-let gameConfig = {
-  polarBear: {
-    x: 0,
-    y: 1 * u
-  },
-  icebergs: {
-    col1: {
-      x: 1 * u,
-      yArray: [0, 1 * u, 4 * u, 5 * u],
-      isLeadingIceberg: [false, true, false, true]
-    },
-    col2: {
-      x: 2 * u,
-      yArray: [1 * u, 4 * u, 5 * u],
-      isLeadingIceberg: [false, false, true]
-    },
-    col3: {
-      x: 3 * u,
-      yArray: [1 * u, 2 * u, 3 * u, 6 * u],
-      isLeadingIceberg: [false, false, true, false]
-    },
-    col4: {
-      x: 4 * u,
-      yArray: [3 * u, 4 * u, 5 * u],
-      isLeadingIceberg: [false, false, true]
-    },
-    col5: {
-      x: 5 * u,
-      yArray: [2 * u, 3 * u, 5 * u, 6 * u],
-      isLeadingIceberg: [false, true, false, true]
-    },
-    col6: {
-      x: 6 * u,
-      yArray: [1 * u, 4 * u, 5 * u],
-      isLeadingIceberg: [false, false, true]
-    },
-    col7: {
-      x: 7 * u,
-      yArray: [1 * u, 2 * u, 5 * u],
-      isLeadingIceberg: [false, true, false]
+const polarBearCoords = {
+  x: 0,
+  y: 1 * u
+}
+
+// Function to randomly generate each line of icebergs
+const icebergLineGenerator = x => {
+  let icebergLine = {};
+  icebergLine.x = x * u;
+  icebergLine.icebergConfiguration = chooseIslandConfigs();
+  icebergLine.yArray = generateRandomIcebergs(icebergLine.icebergConfiguration);
+  if (x % 2 == 1) {
+    icebergLine.direction = "down";
+  } else {
+    icebergLine.direction = "up";
+  }
+  icebergLine.icebergPosArray = generateIcebergPosArray(icebergLine.icebergConfiguration, icebergLine.direction);
+  return icebergLine;
+}
+
+// Function to calculate the coordinates and direction for the arrows on the game canvas
+const arrowLineGenerator = (x, icebergLine) => {
+  let arrowLine = {};
+  arrowLine.x = x * u;
+  const icebergPosArray = icebergLine.icebergPosArray;
+  const icebergYArray = icebergLine.yArray;
+  let arrowY;
+  arrowLine.yArray = [];
+  arrowLine.direction = icebergLine.direction;
+  for (let i = 0; i < icebergPosArray.length; i++) {
+    if (icebergPosArray[i] == "front") {
+
+      if (arrowLine.direction == "down") {
+        arrowY = icebergYArray[i] + u;
+        if (arrowY > 6 * u) {
+          arrowY = 0;
+        }
+      } else if (arrowLine.direction == "up") {
+        arrowY = icebergYArray[i] - u;
+        if (arrowY < 0) {
+          arrowY = 6 * u;
+        }
+      }
+      arrowLine.yArray.push(arrowY);
     }
-  },
-  arrows: {
-    col1: {
-      x: 1 * u,
-      yArray: [2 * u, 6 * u]
-    },
-    col2: {
-      x: 2 * u,
-      yArray: [0, 3 * u]
-    },
-    col3: {
-      x: 3 * u,
-      yArray: [0, 4 * u]
-    },
-    col4: {
-      x: 4 * u,
-      yArray: [2 * u]
-    },
-    col5: {
-      x: 5 * u,
-      yArray: [0, 4 * u]
-    },
-    col6: {
-      x: 6 * u,
-      yArray: [0, 3 * u]
-    },
-    col7: {
-      x: 7 * u,
-      yArray: [3 * u, 6 * u]
-    }
-  },
-  speed: 1750
+  }
+  return arrowLine;
+}
+
+// Generate the 6 lines of icebergs and the arrows
+let icebergLines = [];
+let arrowLines = [];
+for (let x = 1; x < 8; x++) {
+  const icebergLineTemp = icebergLineGenerator(x);
+  icebergLines.push(icebergLineTemp);
+  arrowLines.push(arrowLineGenerator(x, icebergLineTemp));
 }
 
 // Create a 2d array 9x7 (size of canvas) of empty strings (for now), to later store the 'id' of the image for that coordinate
@@ -98,6 +84,3 @@ for (let i = 0; i < 9; i++) {
     coordinateIds[i][j] = '';
   }
 }
-
-// Make a deep copy of the initial game config to be used when we reset the canvas
-const initialGameConfig = JSON.parse(JSON.stringify(gameConfig));

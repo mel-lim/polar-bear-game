@@ -87,9 +87,9 @@ const drawCanvas = () => {
   coordinateIds[8][6] = 'fish';
 
   // Draw the icebergs and label each coordinate as 'iceberg' as they are drawn
-  for (const col in gameConfig.icebergs) {
-    const x = gameConfig.icebergs[col]['x'];
-    const yArray = gameConfig.icebergs[col]['yArray'];
+  for (let i = 0; i < 7; i++) {
+    const x = icebergLines[i]['x'];
+    const yArray = icebergLines[i]['yArray'];
     yArray.forEach(y => {
       context.drawImage(iceberg, x, y, 1 * u, 1 * u);
       coordinateIds[x/u][y/u] = 'iceberg';
@@ -97,20 +97,19 @@ const drawCanvas = () => {
   }
 
   // Draw the arrows: facing the 'down' direction for odd columns and facing the 'up' direction for even columns
-  let colNum = 1;
-  for (const col in gameConfig.arrows) {
-    const x = gameConfig.arrows[col]['x'];
-    const yArray = gameConfig.arrows[col]['yArray'];
-    if (colNum % 2 === 1) {
+  for (let i = 0; i < 7; i++) {
+    const x = arrowLines[i]['x'];
+    const yArray = arrowLines[i]['yArray'];
+    const direction = arrowLines[i]['direction'];
+    if (direction == "down") {
       yArray.forEach(y => context.drawImage(downArrow, x, y, 1 * u, 1 * u));
-    } else {
+    } else if (direction == "up") {
       yArray.forEach(y => context.drawImage(upArrow, x, y, 1 * u, 1 * u));
     }
-    colNum++;
   }
 
   // Draw the polar bear
-  context.drawImage(polarBear, gameConfig.polarBear.x, gameConfig.polarBear.y, 1 * u, 1 * u);
+  context.drawImage(polarBear, polarBearCoords.x, polarBearCoords.y, 1 * u, 1 * u);
 }
 
 // Once all images are loaded, draw the initial canvas
