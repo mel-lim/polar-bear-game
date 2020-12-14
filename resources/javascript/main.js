@@ -1,122 +1,117 @@
 // Function to 'stick' the polar bear to the iceberg once it is moved onto the iceberg
 
-let isUserMove = false;
-
-const stickBear = (colNum, yArray, i) => {
+const stickBear = (x, direction) => {
 
   // If it is an odd column, move the iceberg and polar bear down the screen
-  if (colNum % 2 === 1) {
-    gameConfig.polarBear.y += 1 * u;
+  if (direction == "down") {
+    polarBearCoords.y += 1 * u;
     
-    // If the polar bear gets moved off the canvas, the game is lost
-    if (gameConfig.polarBear.y > 6 * u) {
-      splash.play();
-      stopGame();
-      gameOverPrompt(false);
-    }
-
     // If it is an even column, move the iceberg and polar bear up the screen
-  } else {
-    gameConfig.polarBear.y -= 1 * u;
-    
-    // If the polar bear gets moved off the canvas, the game is lost
-    if (gameConfig.polarBear.y < 0) {
-      splash.play();
-      stopGame();
-      gameOverPrompt(false);
-    }
+  } else if (direction == "up") {
+    polarBearCoords.y -= 1 * u;  
+  }
+  // If the polar bear gets moved off the canvas, the game is lost
+  if (polarBearCoords.y < 0 || polarBearCoords.y > 6 * u) {
+    splash.play();
+    stopGame();
+    gameOverPrompt(false);
   }
 }
 
 // Function to move the icebergs by incrementing the y values
 
-let isIncrement = true;
+let isUserMove = false;
+let userMovedTo;
 
 const moveIcebergs = () => {
-  let colNum = 1;
 
   // Increment every iceberg, column by column
-  for (const col in gameConfig.icebergs) {
+  for (let i = 0; i < 7; i++) {
 
-    const x = gameConfig.icebergs[col]['x'];
-    const yArray = gameConfig.icebergs[col]['yArray'];
-    const isLeadingIceberg = gameConfig.icebergs[col]['isLeadingIceberg'];
+    const x = icebergLines[i]['x'];
+    const yArray = icebergLines[i]['yArray'];
+    const icebergPosArray = icebergLines[i]['icebergPosArray'];
+    const direction = icebergLines[i]['direction'];
 
-    for (let i = 0; i < yArray.length; i++) {
+    for (let j = 0; j < yArray.length; j++) {
 
       // Check for collision
-      if (x === gameConfig.polarBear.x && yArray[i] === gameConfig.polarBear.y) {
-
+      if (x === polarBearCoords.x && yArray[j] === polarBearCoords.y) {
         // If the bear is on the iceberg, call the stickBear function to have the bear move along with the iceberg that it is on
-
-        // The following if block prevents the bear from being skipped ahead twice if its on a trailing iceberg
-        if (yArray[i] !== yArray[i - 1]) {
-          stickBear(colNum, yArray, i);
+        if (icebergPosArray[j] == "front") {
+          if (isUserMove) {
+            stickBear(x, direction);
+            userMovedTo = "front";
+            isUserMove = false; 
+          } else if (!isUserMove && userMovedTo == "front") {
+            stickBear(x, direction);
+          }
+        }
+        else if (icebergPosArray[j] == "middle") {
+          if (isUserMove) {
+            stickBear(x, direction);
+            userMovedTo = "middle";
+            isUserMove = false; 
+          } else if (!isUserMove && userMovedTo == "middle") {
+            stickBear(x, direction);
+          }          
+        } else if (icebergPosArray[j] == "back") {
+          stickBear(x, direction);
+          userMovedTo = "back";
           isUserMove = false;
-
-          // If the user navigates the polar bear onto a leading iceberg, this will execute
-        } else if (isUserMove && isLeadingIceberg[i]) {
-          stickBear(colNum, yArray, i);
         }
       }
 
       // If it is an odd column, move the icebergs down the screen
-      if (colNum % 2 === 1) {
+      if (direction == "down") {
 
-        if (yArray[i] === 6 * u) {
-          yArray[i] = 0;
+        if (yArray[j] == 6 * u) {
+          yArray[j] = 0;
         } else {
-          yArray[i] += 1 * u;
+          yArray[j] += 1 * u;
         }
 
         // If it is an even column, move the icebergs up the screen
       } else {
-        if (yArray[i] === 0) {
-          yArray[i] = 6 * u;
+        if (yArray[j] == 0) {
+          yArray[j] = 6 * u;
         } else {
-          yArray[i] -= 1 * u;
+          yArray[j] -= 1 * u;
         }
       }
     }
-
-    // Increment the column number
-    colNum++;
   }
 }
 
 // Function to move the arrows
 
 const moveArrows = () => {
-  let colNum = 1;
 
   // Increment every arrow, column by column
-  for (const col in gameConfig.icebergs) {
+  for (let i = 0; i < arrowLines.length; i++) {
 
-    const x = gameConfig.arrows[col]['x'];
-    const yArray = gameConfig.arrows[col]['yArray'];
+    const x = arrowLines[i]['x'];
+    const yArray = arrowLines[i]['yArray'];
+    const direction = arrowLines[i]['direction'];
 
-    for (let i = 0; i < yArray.length; i++) {
+    for (let j = 0; j < yArray.length; j++) {
       // If it is an odd column, move the arrows down the screen
-      if (colNum % 2 === 1) {
-
-        if (yArray[i] === 6 * u) {
-          yArray[i] = 0;
+      if (direction == "down") {
+        if (yArray[j] === 6 * u) {
+          yArray[j] = 0;
         } else {
-          yArray[i] += 1 * u;
+          yArray[j] += 1 * u;
         }
 
         // If it is an even column, move the arrows up the screen
       } else {
-        if (yArray[i] === 0) {
-          yArray[i] = 6 * u;
+        if (yArray[j] === 0) {
+          yArray[j] = 6 * u;
         } else {
-          yArray[i] -= 1 * u;
+          yArray[j] -= 1 * u;
         }
       }
     }
-
-    // Increment the column number
-    colNum++;
   }
 }
 
@@ -165,12 +160,12 @@ const gameOverPrompt = (isWin) => {
 
 // Function to check if the polar bear has fallen into the water
 const checkWin = () => {
-  if (coordinateIds[gameConfig.polarBear.x / u][gameConfig.polarBear.y / u] == 'water') {
+  if (coordinateIds[polarBearCoords.x / u][polarBearCoords.y / u] == 'water') {
     splash.play();
     drawCanvas();
     stopGame();
     gameOverPrompt(false);
-  } else if (coordinateIds[gameConfig.polarBear.x / u][gameConfig.polarBear.y / u] == 'fish') {
+  } else if (coordinateIds[polarBearCoords.x / u][polarBearCoords.y / u] == 'fish') {
     winSound.play();
     chewing.play();
     drawCanvas();
@@ -183,30 +178,30 @@ const checkWin = () => {
 const moveBear = (direction) => {
   switch (direction) {
     case 'up':
-      if (gameConfig.polarBear.y !== 0) {
-        gameConfig.polarBear.y -= 1 * u;
+      if (polarBearCoords.y !== 0) {
+        polarBearCoords.y -= 1 * u;
       }
       break;
       
     case 'left':
-      if (gameConfig.polarBear.x !== 0) {
-        gameConfig.polarBear.x -= 1 * u;
+      if (polarBearCoords.x !== 0) {
+        polarBearCoords.x -= 1 * u;
       }
       break;
     case 'right':
-      if (gameConfig.polarBear.x !== 8 * u) {
-        gameConfig.polarBear.x += 1 * u;
+      if (polarBearCoords.x !== 8 * u) {
+        polarBearCoords.x += 1 * u;
       }
       break;
     case 'down':
-      if (gameConfig.polarBear.y !== 6 * u) {
-        gameConfig.polarBear.y += 1 * u;
+      if (polarBearCoords.y !== 6 * u) {
+        polarBearCoords.y += 1 * u;
       }
       break;
     default:
       break;
     }
-  if (gameConfig.polarBear.x == 0 || gameConfig.polarBear.x == 8 * u) {
+  if (polarBearCoords.x == 0 || polarBearCoords.x == 8 * u) {
     snowFootstep.play();
   } else {
     growl.play();
@@ -251,7 +246,7 @@ const startGame = () => {
   intervalMoveIcebergs = window.setInterval(function () {
     moveIcebergs();
     moveArrows();
-  }, gameConfig.speed);
+  }, speed);
 
   // Play the background music
   backgroundMusic.play();
