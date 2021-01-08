@@ -60,12 +60,37 @@ canvas {
   justify-content: center;
 }
 
-#left-button, #right-button {
-  width: 3.5em;
+.control-button {
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 55px;
+  height: 55px;
+  background-color: white;
+  border: 0px;
+}
+  
+#up-button {
+  background-image: url('../images/keyboard/svg/005-uparrow.svg');
+}
+
+#left-button {
+  background-image: url('../images/keyboard/svg/003-left.svg');
+}
+
+#right-button {
+  background-image: url('../images/keyboard/svg/004-right.svg')
+}
+
+#down-button {
+  background-image: url('../images/keyboard/svg/002-down.svg')
 }
 
 #start-pause-button-container {
   margin-top: 0.8em;
+}
+
+#start-pause-button {
+  background-image: url('../images/keyboard/svg/038-multimedia controls.svg');
 }
 
 /* 'Pop-up' box, on win or lose */
@@ -115,9 +140,5 @@ footer {
 @media only screen and (max-width: 768px) {
   #game-canvas {
     width: 100%;
-  }
-
-  #up-button, #left-button, #right-button, #down-button{
-    
   }
 }
