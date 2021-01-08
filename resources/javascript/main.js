@@ -115,6 +115,55 @@ const moveArrows = () => {
   }
 }
 
+// Function to start the game
+let isPlaying = false;
+let intervalMoveIcebergs;
+let intervalDrawCanvas
+
+const startGame = () => {
+
+  // Every 10ms, clear and redraw the canvas with all the components on it at their updated locations
+  intervalDrawCanvas = window.setInterval(drawCanvas, 10);
+
+  // Start the icebergs moving
+  intervalMoveIcebergs = window.setInterval(function () {
+    moveIcebergs();
+    moveArrows();
+  }, speed);
+
+  // Play the background music
+  backgroundMusic.play();
+
+  // Allow user to use the arrow keys to move the polar bear 
+  window.addEventListener('keydown', function (key) {
+    arrowKeyPress(key)
+  });
+
+  // Allow user to use the buttons to move the polar bear
+  const upButtonTarget = $("up-button");
+  upButtonTarget.addEventListener("click", function () {
+    moveBear('up');
+  });
+
+  const leftButtonTarget = $("left-button");
+  leftButtonTarget.addEventListener("click", function () {
+    moveBear('left');
+  });
+
+  const rightButtonTarget = $("right-button");
+  rightButtonTarget.addEventListener("click", function () {
+    moveBear('right');
+  });
+
+  const downButtonTarget = $("down-button");
+  downButtonTarget.addEventListener("click", function () {
+    moveBear('down');
+  });
+
+  isPlaying = true;
+
+}
+
 // Function to stop game
 const stopGame = () => {
   clearInterval(intervalDrawCanvas);
@@ -122,6 +171,35 @@ const stopGame = () => {
   backgroundMusic.stop();
   isPlaying = false;
 }
+
+const hitSpaceBar = key => {
+  if (key.code === 'Space') {
+    // This prevents the window from moving up when the space bar is pressed
+    key.preventDefault();
+    if (!isPlaying) {
+      startGame();
+    } else {
+      stopGame();
+    }
+  }
+}
+
+let spaceBarHandler;
+
+// Hit the space bar to start/stop the game
+window.addEventListener('keydown', spaceBarHandler = function(key) {
+  hitSpaceBar(key);
+});
+
+// Click the button to start/stop the game
+const startPauseButtonTarget = $("start-pause-button");
+startPauseButtonTarget.addEventListener("click", function () {
+  if (!isPlaying) {
+    startGame();
+  } else {
+    stopGame();
+  }
+});
 
 // Function to prompt user with a dialog box to play again when game is won or lost
 
@@ -158,6 +236,11 @@ const gameOverPrompt = (isWin) => {
   });
 }
 
+const gameOver = () => {
+  console.log("gameover function called");
+  window.removeEventListener('keydown', spaceBarHandler);
+}
+
 // Function to check if the polar bear has fallen into the water
 const checkWin = () => {
   if (coordinateIds[polarBearCoords.x / u][polarBearCoords.y / u] == 'water') {
@@ -165,12 +248,14 @@ const checkWin = () => {
     drawCanvas();
     stopGame();
     gameOverPrompt(false);
+    gameOver();
   } else if (coordinateIds[polarBearCoords.x / u][polarBearCoords.y / u] == 'fish') {
     winSound.play();
     chewing.play();
     drawCanvas();
     stopGame();
     gameOverPrompt(true);
+    gameOver();
   }
 }
 
@@ -232,74 +317,5 @@ const arrowKeyPress = key => {
   }
 }
 
-// Function to start the game
-let isPlaying = false;
-let intervalMoveIcebergs;
-let intervalDrawCanvas
 
-const startGame = () => {
 
-  // Every 10ms, clear and redraw the canvas with all the components on it at their updated locations
-  intervalDrawCanvas = window.setInterval(drawCanvas, 10);
-
-  // Start the icebergs moving
-  intervalMoveIcebergs = window.setInterval(function () {
-    moveIcebergs();
-    moveArrows();
-  }, speed);
-
-  // Play the background music
-  backgroundMusic.play();
-
-  // Allow user to use the arrow keys to move the polar bear 
-  window.addEventListener('keydown', function (key) {
-    arrowKeyPress(key)
-  });
-
-  // Allow user to use the buttons to move the polar bear
-  const upButtonTarget = $("up-button");
-  upButtonTarget.addEventListener("click", function () {
-    moveBear('up');
-  });
-
-  const leftButtonTarget = $("left-button");
-  leftButtonTarget.addEventListener("click", function () {
-    moveBear('left');
-  });
-
-  const rightButtonTarget = $("right-button");
-  rightButtonTarget.addEventListener("click", function () {
-    moveBear('right');
-  });
-
-  const downButtonTarget = $("down-button");
-  downButtonTarget.addEventListener("click", function () {
-    moveBear('down');
-  });
-
-  isPlaying = true;
-
-}
-
-// Hit the space bar to start/stop the game
-window.addEventListener('keydown', function hitSpaceBar(key) {
-  if (key.code === 'Space') {
-    // This prevents the window from moving up when the space bar is pressed
-    key.preventDefault();
-    if (!isPlaying) {
-      startGame();
-    } else {
-      stopGame();
-    }
-  }
-});
-
-// Click the button to start/stop the game
-const startPauseButtonTarget = $("start-pause-button");
-startPauseButtonTarget.addEventListener("click", function () {
-  if (!isPlaying) {
-    startGame();
-  } else {
-    stopGame();
-  }
-});
