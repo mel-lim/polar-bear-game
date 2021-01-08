@@ -284,6 +284,7 @@ const startGame = () => {
 // Hit the space bar to start/stop the game
 window.addEventListener('keydown', function hitSpaceBar(key) {
   if (key.code === 'Space') {
+    // This prevents the window from moving up when the space bar is pressed
     key.preventDefault();
     if (!isPlaying) {
       startGame();
