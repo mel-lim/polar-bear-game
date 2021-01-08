@@ -105,10 +105,10 @@ canvas {
   display: none;
   border: solid 1px black;
   background-color: hsl(194, 28%, 93%);
-  position: absolute;
+  position: fixed;
   width: 30%;
   top: 30%;
-  left: 35%;
+  left: 31.5%;
   padding: 0 1em 1em 1em;
   text-align: center;
 }
