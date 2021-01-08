@@ -15,6 +15,7 @@ const stickBear = (x, direction) => {
     splash.play();
     stopGame();
     gameOverPrompt(false);
+    gameOver();
   }
 }
 
@@ -115,10 +116,41 @@ const moveArrows = () => {
   }
 }
 
+// Function to process the arrow keys pressed by the user
+const arrowKeyPress = key => {
+  switch (key.code) {
+    case 'ArrowUp':
+      key.preventDefault();
+      moveBear('up');
+      break;
+    case 'ArrowLeft':
+      moveBear('left');
+      break;
+    case 'ArrowRight':
+      moveBear('right');
+      break;
+    case 'ArrowDown':
+      key.preventDefault();
+      moveBear('down');
+      break;
+    default:
+      break;
+  }
+}
+
 // Function to start the game
 let isPlaying = false;
 let intervalMoveIcebergs;
 let intervalDrawCanvas
+const upButtonTarget = $("up-button");
+const leftButtonTarget = $("left-button");
+const rightButtonTarget = $("right-button");
+const downButtonTarget = $("down-button");
+let arrowPressHander;
+let moveUpHandler;
+let moveLeftHandler;
+let moveRightHandler;
+let moveDownHandler;
 
 const startGame = () => {
 
@@ -135,28 +167,25 @@ const startGame = () => {
   backgroundMusic.play();
 
   // Allow user to use the arrow keys to move the polar bear 
-  window.addEventListener('keydown', function (key) {
+  window.addEventListener('keydown', arrowPressHander = function (key) {
     arrowKeyPress(key)
   });
 
   // Allow user to use the buttons to move the polar bear
-  const upButtonTarget = $("up-button");
-  upButtonTarget.addEventListener("click", function () {
+  
+  upButtonTarget.addEventListener("click", moveUpHandler = function () {
     moveBear('up');
   });
 
-  const leftButtonTarget = $("left-button");
-  leftButtonTarget.addEventListener("click", function () {
+  leftButtonTarget.addEventListener("click", moveLeftHander = function () {
     moveBear('left');
   });
 
-  const rightButtonTarget = $("right-button");
-  rightButtonTarget.addEventListener("click", function () {
+  rightButtonTarget.addEventListener("click", moveRightHandler = function () {
     moveBear('right');
   });
 
-  const downButtonTarget = $("down-button");
-  downButtonTarget.addEventListener("click", function () {
+  downButtonTarget.addEventListener("click", moveDownHandler = function () {
     moveBear('down');
   });
 
@@ -169,6 +198,17 @@ const stopGame = () => {
   clearInterval(intervalDrawCanvas);
   clearInterval(intervalMoveIcebergs);
   backgroundMusic.stop();
+
+  window.removeEventListener('keydown', arrowPressHander);
+
+  upButtonTarget.removeEventListener("click", moveUpHandler);
+
+  leftButtonTarget.removeEventListener("click", moveLeftHander);
+
+  rightButtonTarget.removeEventListener("click", moveRightHandler);
+
+  downButtonTarget.removeEventListener("click", moveDownHandler);
+
   isPlaying = false;
 }
 
@@ -295,27 +335,7 @@ const moveBear = (direction) => {
   checkWin();
 }
 
-// Function to process the arrow keys pressed by the user
-const arrowKeyPress = key => {
-  switch (key.code) {
-    case 'ArrowUp':
-      key.preventDefault();
-      moveBear('up');
-      break;
-    case 'ArrowLeft':
-      moveBear('left');
-      break;
-    case 'ArrowRight':
-      moveBear('right');
-      break;
-    case 'ArrowDown':
-      key.preventDefault();
-      moveBear('down');
-      break;
-    default:
-      break;
-  }
-}
+
 
 
 

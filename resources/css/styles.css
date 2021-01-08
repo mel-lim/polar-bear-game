@@ -131,7 +131,7 @@ footer {
   text-align: center;
 }
 
-@media only screen and (max-width: 850px) {
+@media only screen and (max-width: 1042px) {
   main {
     flex-direction: column;
     flex-wrap: wrap-reverse;
