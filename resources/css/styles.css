@@ -24,7 +24,6 @@ header {
 main {
   display: flex;
   padding: 0 2%;
-  justify-content: 
 }
 
 /* Instructions */
@@ -99,4 +98,26 @@ canvas {
 
 footer {
   text-align: center;
+}
+
+@media only screen and (max-width: 850px) {
+  main {
+    flex-direction: column;
+    flex-wrap: wrap-reverse;
+  }
+
+  #game-area {
+    display: inline-block;
+    margin: 15px auto;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  #game-canvas {
+    width: 100%;
+  }
+
+  #up-button, #left-button, #right-button, #down-button{
+    
+  }
 }
